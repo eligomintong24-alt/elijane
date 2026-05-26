@@ -288,7 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================================================
   // SYNC ACTIVE NAV LINK WITH SCROLL POSITION
   // ==========================================================================
-  const navSections = document.querySelectorAll('section');
+  const navSections = document.querySelectorAll('section[id]');
   const navLinks = document.querySelectorAll('.nav-menu a');
 
   const highlightNav = () => {
