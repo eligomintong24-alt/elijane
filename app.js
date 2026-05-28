@@ -1,7 +1,7 @@
 /**
- * Aura Creative Portfolio Engine
+ * Eli Jane Gomintong - Provident Flow Portfolio Engine
  * Author: Antigravity Code Pair
- * Dedicated to visual excellence and premium user interactions.
+ * Dedicated to visual excellence, premium user interactions, and robust SMM presentation.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const htmlElement = document.documentElement;
 
   // Retrieve previous settings or check system preference
-  const savedTheme = localStorage.getItem('aura-theme');
+  const savedTheme = localStorage.getItem('eli-theme');
   const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
   const currentTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
   themeToggle.addEventListener('click', () => {
     const nextTheme = htmlElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
     htmlElement.setAttribute('data-theme', nextTheme);
-    localStorage.setItem('aura-theme', nextTheme);
+    localStorage.setItem('eli-theme', nextTheme);
   });
 
 
@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   // ==========================================================================
-  // PORTFOLIO FILTER ENGINE
+  // PROJECTS CATEGORY FILTER ENGINE
   // ==========================================================================
   const filterBtns = document.querySelectorAll('.filter-btn');
   const portfolioItems = document.querySelectorAll('.portfolio-item');
@@ -105,47 +105,92 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   // ==========================================================================
-  // INTERSECTION OBSERVER: ANIMATIONS & COUNTERS
+  // DYNAMIC LIGHTBOX MODAL PREVIEW ENGINE
+  // ==========================================================================
+  const lightboxModal = document.getElementById('lightbox-modal');
+  const lightboxClose = document.getElementById('lightbox-close');
+  const projectTriggers = document.querySelectorAll('.project-card-trigger');
+  
+  const lightboxImg = document.getElementById('lightbox-img');
+  const lightboxTitle = document.getElementById('lightbox-title');
+  const lightboxGoal = document.getElementById('lightbox-goal');
+  const lightboxRole = document.getElementById('lightbox-role');
+  const lightboxResults = document.getElementById('lightbox-results');
+  const lightboxActionBtn = document.getElementById('lightbox-action-btn');
+
+  // Open Lightbox
+  const openLightbox = (card) => {
+    const imgEl = card.querySelector('.portfolio-img');
+    const title = card.getAttribute('data-title');
+    const goal = card.getAttribute('data-goal');
+    const role = card.getAttribute('data-role');
+    const results = card.getAttribute('data-results');
+
+    // Populate data
+    lightboxImg.src = imgEl.src;
+    lightboxImg.alt = imgEl.alt;
+    lightboxTitle.innerText = title || "Project Overview";
+    lightboxGoal.innerText = goal || "Details pending.";
+    lightboxRole.innerText = role || "Lead Specialist.";
+    lightboxResults.innerText = results || "Delivered operational stability.";
+
+    // Show modal
+    lightboxModal.classList.add('show');
+    lightboxModal.setAttribute('aria-hidden', 'false');
+    
+    // Prevent background scrolling
+    document.body.style.overflow = 'hidden';
+  };
+
+  // Close Lightbox
+  const closeLightbox = () => {
+    lightboxModal.classList.remove('show');
+    lightboxModal.setAttribute('aria-hidden', 'true');
+    
+    // Restore scrolling
+    document.body.style.overflow = '';
+  };
+
+  // Add click events to triggers
+  projectTriggers.forEach(card => {
+    card.addEventListener('click', (e) => {
+      e.preventDefault();
+      openLightbox(card);
+    });
+  });
+
+  // Close via button click
+  lightboxClose.addEventListener('click', closeLightbox);
+
+  // Close via background click
+  lightboxModal.addEventListener('click', (e) => {
+    if (e.target === lightboxModal) {
+      closeLightbox();
+    }
+  });
+
+  // Close via Escape key
+  window.addEventListener('keyup', (e) => {
+    if (e.key === 'Escape' && lightboxModal.classList.contains('show')) {
+      closeLightbox();
+    }
+  });
+
+  // Route lightbox call-to-action to closing the modal before routing
+  lightboxActionBtn.addEventListener('click', () => {
+    closeLightbox();
+  });
+
+
+  // ==========================================================================
+  // INTERSECTION OBSERVER: ANIMATIONS
   // ==========================================================================
   const animatedElements = document.querySelectorAll('.reveal-fade-up, .reveal-fade-in');
 
   const observerOptions = {
     root: null,
-    threshold: 0.15,
-    rootMargin: '0px 0px -50px 0px'
-  };
-
-  // Stat Counter Increment Animation Function
-  const animateCounter = (el) => {
-    const target = parseFloat(el.getAttribute('data-target'));
-    const isPlus = el.innerText.includes('+');
-    const isPercent = el.innerText.includes('%');
-    const isK = el.innerText.includes('K+');
-    
-    let current = 0;
-    const duration = 1500; // 1.5s
-    const steps = 60;
-    const increment = target / steps;
-    const stepDuration = duration / steps;
-    
-    const counterInterval = setInterval(() => {
-      current += increment;
-      if (current >= target) {
-        current = target;
-        clearInterval(counterInterval);
-      }
-      
-      let formattedVal = Math.floor(current);
-      if (isK) {
-        el.innerText = `${formattedVal}K+`;
-      } else if (isPercent) {
-        el.innerText = `${formattedVal}%`;
-      } else if (isPlus) {
-        el.innerText = `+${formattedVal}%`;
-      } else {
-        el.innerText = `${formattedVal}+`;
-      }
-    }, stepDuration);
+    threshold: 0.1,
+    rootMargin: '0px 0px -40px 0px'
   };
 
   // Skill Fill Animating Function
@@ -164,17 +209,6 @@ document.addEventListener('DOMContentLoaded', () => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add('active');
-        
-        // Trigger specific animations on child elements if needed
-        
-        // If it's a stats block, animate counters inside
-        const counterElements = entry.target.querySelectorAll('[data-target]');
-        counterElements.forEach(el => {
-          if (!el.classList.contains('counted')) {
-            el.classList.add('counted');
-            animateCounter(el);
-          }
-        });
 
         // If it's the skills section, trigger skill bars progress animation
         if (entry.target.classList.contains('about-skills')) {
@@ -207,7 +241,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const inputs = form.querySelectorAll('input, select, textarea');
   
   inputs.forEach(input => {
-    // If element is already filled (like select elements or browser autofills)
     const group = input.closest('.input-group');
     
     // Check validation on blur
